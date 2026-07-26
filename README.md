@@ -510,7 +510,173 @@ Step 13: Final Code Change:
 
   <img width="943" height="404" alt="image" src="https://github.com/user-attachments/assets/9bb6bd57-54b7-4b98-9758-dffc33a4b779" /> 
 
-      
+
+=======================================================================================
+=======================================================================================
+=======================================================================================
+
+Assignment 2.
+==================== 
+2.Automated EBS Snapshot Creation and Cleanup
+Objective: Automate EBS volume backups and delete snapshots older than a retention period.
+
+Instructions:
+
+EBS Setup: Identify or create an EBS volume; note the volume ID.
+
+Lambda IAM Role: Inline policy with ec2:CreateSnapshot, ec2:DescribeSnapshots, ec2:DeleteSnapshot, ec2:CreateTags.
+
+Lambda Function (Boto3):
+
+Create a snapshot of the specified volume and tag it (e.g., CreatedBy=Lambda-Backup).
+
+List snapshots with that tag (owned by your account) and delete those older than 30 days.
+
+Print IDs of created and deleted snapshots.
+
+EventBridge: Schedule the function weekly.
+
+Testing: Trigger manually; confirm snapshot creation and cleanup in the EC2 console.
+
+Discussion point: AWS Data Lifecycle Manager (DLM) does this natively. Note in your documentation when Lambda is still the better choice (custom retention logic, cross-account copies, notifications).
+
+
+================================== 
+
+ Architecture:
+
+   EventBridge (Weekly Schedule)
+                │
+                ▼
+         Lambda Function
+                │
+    ┌───────────┴────────────┐
+    │                        │
+    ▼                        ▼
+Create Snapshot          Delete Old Snapshots
+    │                        │
+    ▼                        ▼
+ EBS Volume          Older than 30 Days
+
+ <img width="322" height="183" alt="image" src="https://github.com/user-attachments/assets/31c8e948-efbf-47b0-810d-d7686028ac35" /> 
+
+ =========================== 
+
+ Steps:
+
+ Step 1: Create an EC2 instance
+
+Note: An EBS (Elastic Block Store) volume is attached to an EC2 instance. We need an EBS volume because Lambda will create snapshots (backups) of that volume.
+
+  1. search for EC2 in AWS console
+
+     <img width="784" height="164" alt="image" src="https://github.com/user-attachments/assets/1121971c-8e98-4ca2-942d-70cbd46bca71" />
+
+     Click Launch instance.
+
+      Give Name: SnapshotDemo
+
+     <img width="606" height="167" alt="image" src="https://github.com/user-attachments/assets/13fbcd7f-0016-4886-bdad-966dbe4d7ac2" />
+     <img width="98" height="275" alt="image" src="https://github.com/user-attachments/assets/e3f105f2-ff04-4147-bf92-8dddbcdb6533" />
+     <img width="586" height="85" alt="image" src="https://github.com/user-attachments/assets/58a3d376-ac96-475f-b5d4-486ebb25fe1a" />
+     <img width="277" height="36" alt="image" src="https://github.com/user-attachments/assets/9e2ae1af-85f9-4ef1-899b-4b39595c1911" />
+
+     <img width="569" height="141" alt="image" src="https://github.com/user-attachments/assets/ddbd192b-75bb-44ef-9225-05fd1fa522c8" />
+
+     <img width="442" height="322" alt="image" src="https://github.com/user-attachments/assets/297fa9d9-6371-4078-91da-13ea38f35756" />
+
+     The .pem file will be downloaded.
+     Keep everything else default.
+     Launch instance.
+
+     <img width="928" height="136" alt="image" src="https://github.com/user-attachments/assets/84b8f11b-13cd-430e-bab4-ead42bb6cdda" />
+
+Step 2. Find the EBS Volume ID
+
+   Open the EC2 Dashboard
+   In the AWS Console, click EC2 (top-left breadcrumb or search for EC2).
+   In the left navigation pane, scroll down until you see: Elastic Block Store, Click Volumes. 
+
+<img width="914" height="242" alt="image" src="https://github.com/user-attachments/assets/989be1f1-d9ca-459e-a8f2-7501cff5085c" /> 
+
+  Copy the Volume ID
+
+Step 3: Create an IAM Role for Lambda  
+        By default, a Lambda function cannot create or delete EBS snapshots.
+        We need to give Lambda permission by creating an IAM Role. 
+        Without this role, Lambda will return an AccessDenied error.
+
+   1. Open IAM :
+
+       <img width="803" height="154" alt="image" src="https://github.com/user-attachments/assets/8bac22bc-b4b1-4bbd-a98f-d0ac8c0a5b6a" />
+
+       Open Roles, Create a New Role:
+        Click the Create role button.
+        Select Trusted Entity:
+          Trusted entity type: AWS service
+          Use case: Lambda.
+      Attach Basic Lambda Policy
+      In the search box, type: AWSLambdaBasicExecutionRole
+
+ 
+      <img width="830" height="226" alt="image" src="https://github.com/user-attachments/assets/266e870b-33eb-4ac7-a4c9-d41249065ef9" />
+
+
+       <img width="730" height="284" alt="image" src="https://github.com/user-attachments/assets/b650ebf0-246b-40dd-a0dc-54bfac4defc6" />
+
+      Give Name : LambdaEBSSnapshotRole, and click create role.
+
+      ==================
+
+      Step 4: Add an Inline Policy to the IAM Role
+
+      As Currently, your role can only write logs to CloudWatch.
+
+   1. Open the Role
+   2. Add an Inline Policy:
+       Click Add permissions
+        Create inline policy
+        Select the JSON Editor, delete the code and the below code :
+      {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateSnapshot",
+        "ec2:DescribeSnapshots",
+        "ec2:DeleteSnapshot",
+        "ec2:CreateTags"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+
+
+Click Next and give a olicy Name : EBSSnapshotPolicy
+
+<img width="942" height="221" alt="image" src="https://github.com/user-attachments/assets/41d38291-5ff6-46e9-9fdf-151afb2e677e" /> 
+
+<img width="933" height="322" alt="image" src="https://github.com/user-attachments/assets/7863f08c-00b1-49c0-af13-11fa94c9f270" /> 
+
+Step 5: Create the Lambda Function 
+
+<img width="815" height="149" alt="image" src="https://github.com/user-attachments/assets/f14c49c7-d373-4562-9ecb-d905498f2e3a" />
+
+
+
+
+
+
+
+
+
+
+
+     
+
+
      
 
    
