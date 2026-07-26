@@ -117,10 +117,10 @@ Step 4: Create inline policy
   ]
 }
 
-        <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/76fb8a2a-9259-4487-a2c1-2a925e5ebdf4" />
+   <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/76fb8a2a-9259-4487-a2c1-2a925e5ebdf4" />
 
 
-         <img width="929" height="322" alt="image" src="https://github.com/user-attachments/assets/26ba643d-88c9-40f0-93e8-8de35a0e6416" />
+ <img width="929" height="322" alt="image" src="https://github.com/user-attachments/assets/26ba643d-88c9-40f0-93e8-8de35a0e6416" />
 
 
    
