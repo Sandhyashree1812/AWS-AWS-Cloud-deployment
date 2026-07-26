@@ -45,6 +45,9 @@ Checks LastModified Date
         │
   Prints deleted files
 
+<img width="214" height="230" alt="image" src="https://github.com/user-attachments/assets/0f25830f-bdac-4425-a428-8577d21a8410" />
+
+
 ==========================================
 
 Steps
