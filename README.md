@@ -654,7 +654,7 @@ Step 3: Create an IAM Role for Lambda
 }
 
 
-Click Next and give a olicy Name : EBSSnapshotPolicy
+Click Next and give a policy Name : EBSSnapshotPolicy
 
 <img width="942" height="221" alt="image" src="https://github.com/user-attachments/assets/41d38291-5ff6-46e9-9fdf-151afb2e677e" /> 
 
@@ -662,7 +662,233 @@ Click Next and give a olicy Name : EBSSnapshotPolicy
 
 Step 5: Create the Lambda Function 
 
+  notes: Why?
+      The Lambda function is the program that will:
+      Create a snapshot of your EBS volume.
+      Tag the snapshot.
+      Find old snapshots.
+      Delete snapshots older than 30 days.
+
+   Instead of creating an EC2 instance to run your Python code, AWS runs the code for you only when it is needed.
+
+   <img width="295" height="139" alt="image" src="https://github.com/user-attachments/assets/0463402a-64a3-4767-9335-ab70af60e6f6" />
+
+
 <img width="815" height="149" alt="image" src="https://github.com/user-attachments/assets/f14c49c7-d373-4562-9ecb-d905498f2e3a" />
+
+   In AWS Console searh for Lambda and click it.
+   Click Create a Function.
+   Select Author from Scratch.
+   Give Function Name: EBSSnapshotManager 
+
+   <img width="557" height="307" alt="image" src="https://github.com/user-attachments/assets/b92e1f3a-4cf5-41bf-9a80-e8d61e478891" />
+
+   Runtime : Python 3.12
+   Click Additional Settings.
+   Keep the default architecture:  x86_64 (default)
+
+   <img width="545" height="274" alt="image" src="https://github.com/user-attachments/assets/3087f8fe-fef4-4dae-9bb7-12b4334fb653" />
+
+  
+   Click Custom execution role, turn it on.
+   Use an existing role: LambdaEBSSnapshotRole and click save.
+
+   <img width="364" height="286" alt="image" src="https://github.com/user-attachments/assets/2ec9641f-76a7-4b67-ba7b-bbf1252b0793" /> 
+
+
+   Click Create Function. 
+
+   <img width="933" height="337" alt="Screenshot 2026-07-27 000653" src="https://github.com/user-attachments/assets/dab0910e-4682-4be0-8cdc-9f4a8132a65b" />
+
+   
+============================
+   Notes: Why?
+
+   This role contains the permissions that allow Lambda to:
+
+   Create snapshots
+   Delete snapshots
+   Describe snapshots
+   Add tags
+   Write logs to CloudWatch
+   Without this role, Lambda would receive an AccessDenied error.
+================================
+
+   Step 6: Replace the Default Code 
+
+   De;ete the code in Json and paste the below Code:
+
+import boto3
+from datetime import datetime, timezone, timedelta
+
+# Create EC2 client
+ec2 = boto3.client('ec2')
+
+# Replace this with your Volume ID
+VOLUME_ID = "vol-051c35e5359192101"
+
+# Retention period
+RETENTION_DAYS = 30
+
+
+def lambda_handler(event, context):
+
+   # Create snapshot
+   response = ec2.create_snapshot(
+       VolumeId=VOLUME_ID,
+        Description="Automated Lambda Backup"
+    )
+
+   snapshot_id = response["SnapshotId"]
+
+ # Add tag
+   ec2.create_tags(
+        Resources=[snapshot_id],
+        Tags=[
+            {
+                "Key": "CreatedBy",
+                "Value": "Lambda-Backup"
+            }
+        ]
+    )
+
+   print(f"Created Snapshot: {snapshot_id}")
+
+   # Find snapshots created by Lambda
+   snapshots = ec2.describe_snapshots(
+        OwnerIds=["self"],
+        Filters=[
+            {
+                "Name": "tag:CreatedBy",
+                "Values": ["Lambda-Backup"]
+            }
+        ]
+    )
+
+   # Calculate cutoff date
+   cutoff = datetime.now(timezone.utc) - timedelta(days=RETENTION_DAYS)
+
+   deleted = []
+
+   # Delete old snapshots
+   for snap in snapshots["Snapshots"]:
+
+   if snap["StartTime"] < cutoff:
+
+   ec2.delete_snapshot(
+                SnapshotId=snap["SnapshotId"]
+            )
+
+   deleted.append(snap["SnapshotId"])
+
+   print("Deleted Snapshots:", deleted)
+
+   return {
+        "created_snapshot": snapshot_id,
+        "deleted_snapshots": deleted
+    }
+     
+   
+
+====================== 
+
+Step 7: Deploy the Code
+
+After pasting the code:
+
+Click the Deploy button.
+Wait for the success message: Successfully updated the function. 
+
+Step 8: Test the Lambda Function
+
+  Click Invoke.
+  Click Create a Test Event.
+  Event Name: TestSnapshot
+
+  <img width="902" height="193" alt="Screenshot 2026-07-27 010716" src="https://github.com/user-attachments/assets/aecea0c9-7640-4e90-87e7-c1f0a6831e85" />
+
+  Change the code to : {} 
+
+  <img width="311" height="173" alt="Screenshot 2026-07-27 010822" src="https://github.com/user-attachments/assets/50f03119-7053-4ca8-9b3c-a2682fd1d894" />
+
+  Click save. 
+  Click Test/Invoke again.
+<img width="934" height="356" alt="Screenshot 2026-07-27 001342" src="https://github.com/user-attachments/assets/403dc8cd-d11a-4243-8960-fe12a9e4bc71" /> 
+
+<img width="328" height="65" alt="Screenshot 2026-07-27 010953" src="https://github.com/user-attachments/assets/b65a5d05-0eaa-46f4-84fa-493454e182fe" />
+
+<img width="340" height="137" alt="Screenshot 2026-07-27 011024" src="https://github.com/user-attachments/assets/9adf4d9f-fc82-4664-99f8-cc922e7f187a" /> 
+
+<img width="614" height="134" alt="Screenshot 2026-07-27 011113" src="https://github.com/user-attachments/assets/9b2a1309-fbbe-4b39-82ba-3fbc5c807c8d" /> 
+
+This is the new snapshot created by Lambda. 
+deleted_snapshots : [] , this is empty as this is the first time the fuction is running. An empty list means there were no snapshots older than 30 days to delete. This is normal on the first run. 
+
+==================== 
+
+Notes:
+When we clicked Test, the Lambda function:
+
+. Connected to EC2 using Boto3.
+. Found your EBS volume
+. Created a snapshot.
+. Tagged it with:
+  CreatedBy = Lambda-Backup(Description shows this)
+
+  =========================== 
+
+Step 10: Verify the Tag 
+
+   Let's make sure the snapshot has the correct tag.
+   Go to EC2.
+   Click Snapshots.
+   Click on the snapshot that Lambda created.
+   Scroll down to the Tags section.
+
+<img width="906" height="350" alt="Screenshot 2026-07-27 011945" src="https://github.com/user-attachments/assets/2d22002d-babb-45f6-8a1f-96ea7081d063" /> 
+
+<img width="932" height="344" alt="Screenshot 2026-07-27 012623" src="https://github.com/user-attachments/assets/5a41b3ca-313f-4016-9a85-6337f3db416d" />
+
+Lambda-Backup: This ensures it only deletes snapshots created by your Lambda, not any other snapshots in your account.
+
+=============== 
+
+Step 11: Test the Cleanup Feature
+
+Since waiting 30 days isn't practical, we can temporarily change the retention period.
+In the Lambda code, change: RETENTION_DAYS = 30 to RETENTION_DAYS = 0 
+
+<img width="569" height="250" alt="Screenshot 2026-07-27 013536" src="https://github.com/user-attachments/assets/0ab6e859-f220-449b-a07c-2bd1c132a789" />
+
+
+   Then:
+   . Click Deploy. 
+
+   <img width="312" height="70" alt="Screenshot 2026-07-27 013714" src="https://github.com/user-attachments/assets/e00eeaaa-513d-4777-a5f8-ffb2d20108fb" /> 
+
+   <img width="301" height="112" alt="Screenshot 2026-07-27 013747" src="https://github.com/user-attachments/assets/33b6c23e-8f87-44f2-a2f8-de9a2220dd75" /> 
+
+   <img width="632" height="164" alt="Screenshot 2026-07-27 013903" src="https://github.com/user-attachments/assets/1fee2d8b-890f-4bba-9d50-5f9b0450c134" /> 
+
+   Click on cloudwatch, go to Log management then in Log Streams, click the latest log to see the details
+
+<img width="919" height="278" alt="Screenshot 2026-07-27 014210" src="https://github.com/user-attachments/assets/fd9e7636-742f-4c48-9ea2-fa63c8dc77c7" /> 
+
+<img width="922" height="323" alt="Screenshot 2026-07-27 014342" src="https://github.com/user-attachments/assets/ea56a377-95bb-4750-b318-d7a57fe12e75" /> 
+
+<img width="734" height="340" alt="Screenshot 2026-07-27 014417" src="https://github.com/user-attachments/assets/7e598e49-d58e-4211-88aa-6b987b7505e8" />
+
+
+
+
+   . Click Test again. 
+
+   This allows the function to delete snapshots that are older than the current execution time.
+
+
+
+
+
 
 
 
