@@ -1043,7 +1043,132 @@ Target: EBSSnapshotManager
 <img width="729" height="201" alt="image" src="https://github.com/user-attachments/assets/8e30835e-2272-4512-9e2f-ce55b6184b0c" />
 
 ========================================== 
+=======================================================================================
+======================================================================================
+====================================================================================== 
 
+3. Auto-Tagging EC2 Instances on Launch
+Objective: Automatically tag newly launched EC2 instances for resource tracking, ownership, and cost allocation.
+
+Instructions:
+
+Lambda IAM Role: Inline policy with ec2:CreateTags and ec2:DescribeInstances.
+
+Lambda Function (Boto3):
+
+Extract the instance ID from the EventBridge event (detail.instance-id).
+
+Tag the instance with LaunchDate=<current date> and a custom tag (e.g., Owner or Environment).
+
+Print a confirmation message.
+
+EventBridge Rule: Create a rule matching event pattern — source aws.ec2, detail-type EC2 Instance State-change Notification, state running — with the Lambda as target.
+
+Testing: Launch a new instance; after a short delay, confirm the tags appear.
+
+Bonus: Extract the launching IAM user from CloudTrail events and add an Owner tag automatically — this is a popular interview scenario.
+
+======================================= 
+======================================
+
+Assignment 3.
+
+=========================== 
+
+Architecture:
+
+Launch EC2 Instance
+        │
+        ▼
+EC2 changes state → Running
+        │
+        ▼
+EventBridge Rule detects event
+        │
+        ▼
+Lambda Function executes
+        │
+        ▼
+Lambda adds tags to EC2 Instance 
+
+
+
+<img width="465" height="257" alt="image" src="https://github.com/user-attachments/assets/c704f377-72be-4f39-bc4f-814b2fe9bdb9" />
+
+========================== 
+
+Steps:
+
+Step 1: Create an IAM Role for Lambda
+
+===================================
+Notes:
+The Lambda function needs permission to:
+. Read EC2 instance details
+. Add tags to EC2 instances
+============================= 
+
+   . Open IAM (Identity and Access Management )
+   . Go to
+   . AWS Console → IAM → Roles
+   . Click Create Role 
+
+   <img width="959" height="204" alt="image" src="https://github.com/user-attachments/assets/04358b08-6927-4cb8-8f28-7ed0b3c8ff54" />
+
+
+   Trusted Entity:
+      Choose: AWS Service
+      Select: Lambda
+      Click Next 
+
+   <img width="842" height="352" alt="image" src="https://github.com/user-attachments/assets/e6f90711-3465-496f-8122-fbdc81c457db" />  
+
+   <img width="717" height="275" alt="image" src="https://github.com/user-attachments/assets/69eabe68-2947-4fd3-a626-f03a72aa2f53" />
+
+
+   In Add permissions:
+   Click Create Inline Policy.
+   In Jason Code Paste the below code:
+
+   {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateTags",
+        "ec2:DescribeInstances"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+
+
+   <img width="432" height="322" alt="image" src="https://github.com/user-attachments/assets/1691ed39-ce93-479e-92bc-4e75a7e8d124" /> 
+
+   
+   Click Set Permissions Boundary.
+   Role Name: EC2AutoTagRole
+
+
+   <img width="658" height="283" alt="image" src="https://github.com/user-attachments/assets/59b0b5ae-4d2b-4571-9077-5459963de87d" /> 
+
+   Select Trusted entities, edit this.
+   Select Trusted Entity Type: AWS Service.
+   Use Case: Lambda.
+   Click next.
+   We reach the previous page, again click Next.
+   Add Permissions:
+   Inline Policy Name: EC2AutoTagPolicy
+   We already see Service: EC2
+   Access level: Limited: List, Tagging
+   Resource: All resources
+   Click Create Role.
+
+   <img width="693" height="337" alt="image" src="https://github.com/user-attachments/assets/cab6395d-a95f-43d9-bf2e-bdb1f14d51f9" /> 
+
+   <img width="776" height="206" alt="image" src="https://github.com/user-attachments/assets/a8743ea9-d92c-414b-a494-4108d13028e0" />
 
 
 
