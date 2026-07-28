@@ -917,8 +917,89 @@ Step 12: Schedule the Lambda with EventBridge.
 
 . In Cron Expression, enter : 0 0 ? * SUN *
 
+<img width="949" height="350" alt="image" src="https://github.com/user-attachments/assets/f36e5a22-7aee-4475-9d9e-7bbedcc40f1a" />
 
 
+Click Next, after that, you'll reach the Target page.
+Select:
+Target type: AWS service
+Service: Lambda
+Function: EBSSnapshotManager
+Then click Next, we will reach Target Page.
+Target type : AWS service
+
+
+<img width="949" height="341" alt="image" src="https://github.com/user-attachments/assets/79b19b28-419d-414b-9f74-65309609feba" />
+
+
+<img width="935" height="407" alt="image" src="https://github.com/user-attachments/assets/ab5c5210-2fce-47ce-84d1-d4eb818598b4" />
+
+=======================
+Notes:
+What is a Target?
+A Target is the AWS resource that EventBridge will execute when the schedule is triggered.
+
+========================= 
+
+<img width="218" height="208" alt="image" src="https://github.com/user-attachments/assets/03bb599d-d823-43de-8005-18370b8564d8" />
+
+So, the target is your Lambda function.
+Select the AWS Service.
+Select Target: Lambda Function
+Select the Target Location: Target in this account
+Function : EBSSnapshotManager 
+
+<img width="922" height="295" alt="image" src="https://github.com/user-attachments/assets/81009b52-7de4-41b3-bc93-4a07ab87cb64" />
+
+Why?
+EventBridge needs permission to invoke (start) your Lambda function. AWS will automatically handle this permission for you.
+
+=============== 
+Notes:
+Why?
+Your Lambda function (EBSSnapshotManager) is in the same AWS account, so EventBridge should invoke it directly.
+
+================== 
+
+Permissions: Use execution role (recommended)
+Execution Role: Create a new role for this specific resource 
+AWS has generated a role name such as: Amazon_EventBridge_Invoke_Lambda_1015727220
+
+<img width="930" height="347" alt="image" src="https://github.com/user-attachments/assets/6d4aea86-6620-410f-9c7f-dbb36d81e15f" />
+
+=========== 
+Notes:
+What is this role used for?
+This role allows EventBridge → Lambda communication.
+Remember, this is different from the LambdaEBSSnapshotRole.
+
+<img width="529" height="128" alt="image" src="https://github.com/user-attachments/assets/0088c77d-41b7-47fa-88de-2abe62a85387" />
+
+================= 
+
+Leave everything at the default values.
+Click Next, we will see configure tags
+
+Notes:
+What are Tags?
+A tag is a label that helps you organize AWS resources.
+A tag consists of:
+. Key
+. Value
+
+<img width="379" height="169" alt="image" src="https://github.com/user-attachments/assets/80211b4d-1c96-48e6-bf9b-1b4269a928c4" />
+
+
+Tags are mainly used for:
+
+Organizing resources
+Searching for resources
+Cost tracking
+Resource management
+
+================ 
+
+This assignment does not require EventBridge rule tags. Leave all default as it is.
 
 
  
