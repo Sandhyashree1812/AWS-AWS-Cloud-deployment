@@ -1170,18 +1170,131 @@ The Lambda function needs permission to:
 
    <img width="776" height="206" alt="image" src="https://github.com/user-attachments/assets/a8743ea9-d92c-414b-a494-4108d13028e0" />
 
+=========================== 
+
+Step 2: Create the Lambda Function
+
+   Search Lambda and Click Lamda.
+   Click Create New Function.
+   Select Author from scratch.
+   Function Name: EC2AutoTagFunction
+   Select Runtime: Python 3.12
+   Leave Architecture as: x86_64
+   Click enable Custom Execution Role
+   Execution Role: Use an existing Execution role
+   From Drop down select: EC2AutoTagRole
+
+   <img width="387" height="196" alt="image" src="https://github.com/user-attachments/assets/6a8430ea-c941-41d6-a28a-df08b3e0f6df" />  
+
+   <img width="353" height="332" alt="image" src="https://github.com/user-attachments/assets/9d9d0135-419a-4451-a2b4-e84cd5d65444" />
+
+   Click Create Function.
+
+====================================== 
+Step 3: Write the Lambda Function Code
+   We will see a Code Tab opened. 
+   In the file: lambda_function.py delete the code and paste the below Code. 
+
+import json
+import boto3
+from datetime import datetime
+
+# Create an EC2 client
+ec2 = boto3.client('ec2')
+
+def lambda_handler(event, context):
+
+   # Print the incoming event to CloudWatch Logs
+   print(json.dumps(event))
+
+   # Get the EC2 Instance ID from the EventBridge event
+   instance_id = event['detail']['instance-id']
+
+   # Get today's date
+   launch_date = datetime.utcnow().strftime("%Y-%m-%d")
+
+   # Add tags to the EC2 instance
+   ec2.create_tags(
+        Resources=[instance_id],
+        Tags=[
+            {
+                'Key': 'LaunchDate',
+                'Value': launch_date
+            },
+            {
+                'Key': 'Environment',
+                'Value': 'Dev'
+            }
+        ]
+    )
+
+   print(f"Successfully tagged instance: {instance_id}")
+
+   return {
+        "statusCode": 200,
+        "body": "Tags added successfully."
+    }
 
 
 
 
+================================ 
 
+Step 4: Deploy the Function 
 
+   Click the Deploy button near the top of the page. 
 
+   <img width="947" height="286" alt="image" src="https://github.com/user-attachments/assets/711dd36a-c34b-40b8-a552-a9ac9cf4b0ce" />
 
+==================== 
 
-     
+Step 7: Create an EventBridge Rule
 
-
-     
-
+   Open Amazon Event Bridge.
+   Click Rules.
+   Event Bus: Default.
+   Click Create Rule.
    
+   Select Advanced builder.
+   Give Rule Name: EC2AutoTagRule
+   Description: Automatically tags EC2 instances when they enter running state.
+   Event Bus Name: default 
+
+============ 
+
+   Notes:
+   Why default?
+   AWS services like EC2 send events to the default EventBridge bus.
+   We are listening for EC2 state changes.
+
+   ============= 
+   
+   Click Next
+
+<img width="931" height="372" alt="image" src="https://github.com/user-attachments/assets/3764ebe1-47f3-4a26-95af-9daa4105f6c0" />
+
+   ======================== 
+   
+   Step 8: Create Event Pattern
+
+   This step tells EventBridge which events should trigger Lambda.
+   
+   In Build Event Pattern: 
+   Event Source: AWS events or EventBridge partner events
+   Event Pattern: USe Pattern Form
+   Event Source: AWS services
+   AWS Service: EC2
+   Event Type: EC2 Instance State-change Notification
+   Event Type Specification 1:
+   Specific state(s):
+   running
+
+
+   <img width="738" height="273" alt="image" src="https://github.com/user-attachments/assets/ff53c8d1-afc5-4c71-a3b6-d839d72a63e5" />
+
+
+<img width="518" height="357" alt="image" src="https://github.com/user-attachments/assets/22489acd-3476-409d-afee-b6d838cbb4ae" />
+
+
+<img width="539" height="224" alt="image" src="https://github.com/user-attachments/assets/1a259a81-9861-43ca-bff5-3663438cc46e" />
+
