@@ -863,6 +863,8 @@ In the Lambda code, change: RETENTION_DAYS = 30 to RETENTION_DAYS = 0
 
    Then:
    . Click Deploy. 
+   . Click Test again. 
+   This allows the function to delete snapshots that are older than the current execution time.
 
    <img width="312" height="70" alt="Screenshot 2026-07-27 013714" src="https://github.com/user-attachments/assets/e00eeaaa-513d-4777-a5f8-ffb2d20108fb" /> 
 
@@ -878,12 +880,48 @@ In the Lambda code, change: RETENTION_DAYS = 30 to RETENTION_DAYS = 0
 
 <img width="734" height="340" alt="Screenshot 2026-07-27 014417" src="https://github.com/user-attachments/assets/7e598e49-d58e-4211-88aa-6b987b7505e8" />
 
+========================================== 
+
+Step 12: Schedule the Lambda with EventBridge.
+
+===============================
+   notes:
+
+   What is EventBridge?
+   Amazon EventBridge is a scheduling service.
+   It automatically runs your Lambda function at a specific time.
+   Instead of clicking the Test button every week, EventBridge will do it automatically.
+
+ =================================
+ 
+   Now let's automate it so you don't have to click Test manually.
+
+   . In AWS Console, search for EventBridge and open Amazon EventBridge.
+   . click Rules, then click Create Rule. 
+   . Keep Event Bus as Default.
+
+   <img width="946" height="368" alt="image" src="https://github.com/user-attachments/assets/327abd42-3b5a-4ea2-b2d4-bcd2a30f6ce1" />
+
+  . Click the tab Sceduled rules.
+  . Click go to Sceduled Rules
+  . Click Crate Schedule Rule
+
+  Rule name: WeeklyEBSSnapshot
+  Description (Optional): Creates an EBS snapshot every week.
+  Leave the other settings as their default values.
+  Click Next.
+
+  <img width="952" height="238" alt="image" src="https://github.com/user-attachments/assets/f465750e-0ae2-4f9c-89d7-bd6b952d28af" />
+
+. Select the Schedule Pattern: A fine-grained schedule that runs at a specific time, such as 8:00 a.m. PST on the first Monday of every month.
+
+. In Cron Expression, enter : 0 0 ? * SUN *
 
 
 
-   . Click Test again. 
 
-   This allows the function to delete snapshots that are older than the current execution time.
+
+ 
 
 
 
