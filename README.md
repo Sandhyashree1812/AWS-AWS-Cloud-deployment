@@ -999,15 +999,50 @@ Resource management
 
 ================ 
 
-This assignment does not require EventBridge rule tags. Leave all default as it is.
+This assignment does not require EventBridge rule tags. Leave all default as it is. Click Next.
+
+We will see Review and Create Page. Click the orange Create rule button.
+
+<img width="931" height="347" alt="image" src="https://github.com/user-attachments/assets/bb158da1-f3a4-4267-872f-200bb1d521ff" />
+
+<img width="572" height="339" alt="image" src="https://github.com/user-attachments/assets/75277440-c3de-4073-a822-002a3ecdd6ab" />
+
+<img width="531" height="267" alt="image" src="https://github.com/user-attachments/assets/23c3d27b-c5b8-4282-a11b-a49652040a99" />
 
 
- 
+ <img width="545" height="234" alt="image" src="https://github.com/user-attachments/assets/9fb7ebb8-e9f3-4f33-a65d-87d59f59e892" />
 
 
+Rule is created successfully:
+
+<img width="935" height="407" alt="image" src="https://github.com/user-attachments/assets/aba914b5-6055-4f84-b6b3-f4d24c310ef2" />
+
+<img width="437" height="314" alt="image" src="https://github.com/user-attachments/assets/ba6000a5-3e1e-4784-92ce-7c8a26bca311" />
 
 
+=============== 
 
+Final Verification
+
+After the rule is created:
+Go to Amazon EventBridge.
+Click Rules.
+
+<img width="188" height="261" alt="image" src="https://github.com/user-attachments/assets/d293a059-02de-445c-aae9-67887efc295c" />
+
+
+Click the Scheduled Rules tab.
+
+<img width="715" height="325" alt="image" src="https://github.com/user-attachments/assets/54622985-0c3b-4ee2-a1e9-2aaa7f87b50a" />
+
+
+You should see your rule with:
+Status: Enabled
+Target: EBSSnapshotManager 
+
+<img width="729" height="201" alt="image" src="https://github.com/user-attachments/assets/8e30835e-2272-4512-9e2f-ce55b6184b0c" />
+
+========================================== 
 
 
 
