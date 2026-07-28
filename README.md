@@ -1,4 +1,4 @@
-# AWS-AWS-Cloud-deployment
+<img width="929" height="205" alt="image" src="https://github.com/user-attachments/assets/0309981d-9662-4e98-a786-aed49b86040a" /># AWS-AWS-Cloud-deployment
 1.Automated S3 Bucket Cleanup (Objects Older Than 30 Days)
 Objective: Automate deletion of stale objects in an S3 bucket.
 Task: Delete files older than 30 days in a specific bucket.
@@ -1280,14 +1280,40 @@ Step 7: Create an EventBridge Rule
    This step tells EventBridge which events should trigger Lambda.
    
    In Build Event Pattern: 
-   Event Source: AWS events or EventBridge partner events
-   Event Pattern: USe Pattern Form
+   
+   Event Source: AWS events or EventBridge partner events 
+
+   <img width="719" height="359" alt="image" src="https://github.com/user-attachments/assets/5919afa4-289a-480a-8412-6f4ebff7709e" />
+
+
+
+   Event Pattern: USe Pattern Form 
+
+   <img width="518" height="244" alt="image" src="https://github.com/user-attachments/assets/6f7ebff8-7e71-4e83-bf2a-03ba04fe746e" />
+
+
    Event Source: AWS services
    AWS Service: EC2
+
+   <img width="194" height="224" alt="image" src="https://github.com/user-attachments/assets/9e5818a7-9775-4c62-82e8-4a85c4f61f05" />
+
+
    Event Type: EC2 Instance State-change Notification
    Event Type Specification 1:
    Specific state(s):
-   running
+   running 
+
+   <img width="213" height="287" alt="image" src="https://github.com/user-attachments/assets/e19f5448-7df3-4b19-aca7-4530e4dd5c8d" />
+
+
+Click Next.
+We will see Targets Page.
+1. Target type: AWS Services
+2. Select a target: : Lambda function
+3. Function: EC2AutoTagFunction
+4. Click Next
+
+
 
 
    <img width="738" height="273" alt="image" src="https://github.com/user-attachments/assets/ff53c8d1-afc5-4c71-a3b6-d839d72a63e5" />
@@ -1296,5 +1322,29 @@ Step 7: Create an EventBridge Rule
 <img width="518" height="357" alt="image" src="https://github.com/user-attachments/assets/22489acd-3476-409d-afee-b6d838cbb4ae" />
 
 
-<img width="539" height="224" alt="image" src="https://github.com/user-attachments/assets/1a259a81-9861-43ca-bff5-3663438cc46e" />
+<img width="735" height="369" alt="image" src="https://github.com/user-attachments/assets/ba7a9c7b-dffc-4117-b739-a24e7ab776e0" />
 
+
+<img width="940" height="414" alt="image" src="https://github.com/user-attachments/assets/8e7e9902-563b-4c41-ae28-c1116d1d40e1" />
+
+
+Now we will be in tags Page, Click Next.
+We will see Review and Crate Page.
+Click Create Role.
+
+<img width="700" height="296" alt="image" src="https://github.com/user-attachments/assets/5e1bf034-58cc-4cb4-b82c-bc9c050d66bc" />
+
+
+<img width="515" height="248" alt="image" src="https://github.com/user-attachments/assets/dd14817f-c6e2-4a5f-82f4-b70d5855c84d" />
+
+
+<img width="527" height="262" alt="image" src="https://github.com/user-attachments/assets/52344dc2-bf1e-4521-af29-2ece000b02a5" />
+
+
+<img width="719" height="361" alt="image" src="https://github.com/user-attachments/assets/3f239931-a503-47c3-a6fd-8761c7afdd1c" />
+
+
+<img width="929" height="205" alt="image" src="https://github.com/user-attachments/assets/0cd88b15-db63-4ba5-8b59-9c245f6c21fd" />
+
+
+<img width="191" height="175" alt="image" src="https://github.com/user-attachments/assets/e19369bd-84ad-4d4e-873a-46f60758c641" />
