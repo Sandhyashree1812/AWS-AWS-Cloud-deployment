@@ -702,6 +702,7 @@ Step 5: Create the Lambda Function
 
    
 ============================
+
    Notes: Why?
 
    This role contains the permissions that allow Lambda to:
@@ -712,6 +713,7 @@ Step 5: Create the Lambda Function
    Add tags
    Write logs to CloudWatch
    Without this role, Lambda would receive an AccessDenied error.
+   
 ================================
 
    Step 6: Replace the Default Code 
@@ -813,6 +815,7 @@ Step 8: Test the Lambda Function
 
   Click save. 
   Click Test/Invoke again.
+  
 <img width="934" height="356" alt="Screenshot 2026-07-27 001342" src="https://github.com/user-attachments/assets/403dc8cd-d11a-4243-8960-fe12a9e4bc71" /> 
 
 <img width="328" height="65" alt="Screenshot 2026-07-27 010953" src="https://github.com/user-attachments/assets/b65a5d05-0eaa-46f4-84fa-493454e182fe" />
@@ -1445,23 +1448,70 @@ Click the latest log.
 
 ==================== 
 
-What you've successfully completed
+What we successfully completed
+
 . Created the Lambda function
+
 . Created the IAM execution role
+
 . Added EC2 permissions (DescribeInstances and CreateTags)
+
 . Added the AWSLambdaBasicExecutionRole policy for CloudWatch logging
+
 . Created the EventBridge rule
+
 . Configured the EC2 Running event pattern
+
 . Connected EventBridge to the Lambda function
+
 . Updated and deployed the Lambda code
+
 . Launched an EC2 instance
+
 . Verified automatic tagging
+
 . Verified CloudWatch logs
+
+
 ============================================ 
-============================= 
-==============================================
+======================================================================================
+================================================================================= 
+
+4. 4.Daily AWS Cost Alert Using Cost Explorer API and SNS
+Objective: Build an automated alert when AWS spend exceeds a threshold.
+
+Note: The old CloudWatch "Billing" metric is legacy — it only exists in us-east-1 and must be manually enabled. The modern, interview-relevant approach uses the Cost Explorer API (ce:GetCostAndUsage).
+
+Instructions:
+
+SNS Setup: Create a topic and subscribe your email (confirm the subscription email).
+
+Lambda IAM Role: Inline policy with ce:GetCostAndUsage and sns:Publish (scoped to your topic).
+
+Lambda Function (Boto3):
+
+Initialize ce and sns clients.
+
+Query month-to-date UnblendedCost with get_cost_and_usage.
+
+Compare against a threshold (e.g., $50).
+
+If exceeded, publish an SNS alert with the current spend.
+
+Print the retrieved amount for logging.
+
+EventBridge: Schedule daily.
+
+Testing: Trigger manually with a low threshold (e.g., $0.01) to force an alert.
+
+Discussion point: Mention AWS Budgets as the managed alternative and when custom Lambda logic wins (per-service breakdowns, Slack/Teams delivery, anomaly logic).
+
+======================================================= 
 
 
+Assignment 4.
+
+===================================
 
 
 
