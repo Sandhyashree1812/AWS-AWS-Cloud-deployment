@@ -1348,3 +1348,124 @@ Click Create Role.
 
 
 <img width="191" height="175" alt="image" src="https://github.com/user-attachments/assets/e19369bd-84ad-4d4e-873a-46f60758c641" />
+
+Check for Policy:
+In Lambda, Click EC2AutoTagFunction, Click configuration, click permissions. Click on vie Policy. If policy is not added, then follow below steps:
+Click add permissions.
+Choose AWS Service.
+Statement ID: AllowEventBridgeInvoke
+Principal: events.amazonaws.com
+Action: lambda:InvokeFunction
+Click save.
+
+
+<img width="928" height="350" alt="image" src="https://github.com/user-attachments/assets/77045881-f02f-49ce-b3f8-0cab79f11851" />
+
+<img width="929" height="362" alt="image" src="https://github.com/user-attachments/assets/3fbd5856-7291-437d-8b0b-5522550260b4" />
+
+
+<img width="626" height="272" alt="image" src="https://github.com/user-attachments/assets/850bd7ce-ba19-4292-8365-7b04305b191e" />
+
+
+Check the policy details:
+
+<img width="914" height="312" alt="image" src="https://github.com/user-attachments/assets/53ef07f0-cd89-4463-b681-1f2cabf400d2" />
+
+Step 9:
+Launch a new EC2 instance:
+Click EC2.
+Click Instances.
+Click the orange Launch instances button.
+Name: Auto-Tag-Test
+Keep everything as default. 
+Create a new Key Pair if prompted:
+Keypair Name: Auto Tag New Key Pair
+Key pair type: RSA
+Private key file format: .pem
+Click Create key pair.
+
+
+
+<img width="434" height="287" alt="image" src="https://github.com/user-attachments/assets/c17dbf7e-8ec1-4543-8118-4335e673afa7" />
+
+Click Launch instance.
+
+<img width="899" height="260" alt="image" src="https://github.com/user-attachments/assets/2ddbfd2c-1491-45b2-8824-fe1859a1f8f8" />
+
+
+Click instance and wait till instance state shows: Running 
+Status Check: Check passed
+
+<img width="739" height="313" alt="image" src="https://github.com/user-attachments/assets/9feae8ea-fa5a-4c40-858e-a9fa1c52acda" />
+
+
+Add Another Policy:
+
+In IAM. Roles. EC2AutoTagRole, Permissions, Click add Permissions, click attach policy.
+Search for: AWSLambdaBasicExecutionRole 
+Click Attach.
+
+<img width="935" height="283" alt="image" src="https://github.com/user-attachments/assets/d0465541-e553-46e8-97ef-7c09903625b1" />
+
+
+Launch a new EC2 Instance:
+
+<img width="890" height="250" alt="image" src="https://github.com/user-attachments/assets/9eb015b9-2979-4157-9d85-aafc14204f65" />
+
+Instance status shows: Running
+
+
+<img width="710" height="265" alt="image" src="https://github.com/user-attachments/assets/4997e727-7175-440d-836a-dfa0f89a523b" />  
+
+Select the instance and click on tags tag
+
+
+Key                        Value
+
+LaunchDate               2026-08-07
+Name                 Auto tag Test New
+Environment              Production
+Owner                      DevOps
+
+<img width="742" height="56" alt="image" src="https://github.com/user-attachments/assets/26897759-dc37-4128-89ef-afd9178d0ccc" />
+
+
+To Check Whether Lambda Was Triggered:
+Go to AWS Console, click CloudWatch.
+On the left-hand side, under Logs click Log Management, select Log Groups tab. Click the /aws/lambda/EC2AutoTagFunction function. 
+Click Log STreams.
+Click the latest log.
+
+<img width="953" height="367" alt="image" src="https://github.com/user-attachments/assets/1dd508d3-4537-4294-912a-e55e54ebd72e" />
+
+
+<img width="740" height="323" alt="image" src="https://github.com/user-attachments/assets/b60f140c-3252-4064-84e0-cab0d3fdcc57" /> 
+
+<img width="377" height="261" alt="image" src="https://github.com/user-attachments/assets/d70a79a3-baa3-4a2b-bbe9-ea7aba322cae" /> 
+
+==================== 
+
+What you've successfully completed
+. Created the Lambda function
+. Created the IAM execution role
+. Added EC2 permissions (DescribeInstances and CreateTags)
+. Added the AWSLambdaBasicExecutionRole policy for CloudWatch logging
+. Created the EventBridge rule
+. Configured the EC2 Running event pattern
+. Connected EventBridge to the Lambda function
+. Updated and deployed the Lambda code
+. Launched an EC2 instance
+. Verified automatic tagging
+. Verified CloudWatch logs
+============================================ 
+============================= 
+==============================================
+
+
+
+
+
+
+
+
+
